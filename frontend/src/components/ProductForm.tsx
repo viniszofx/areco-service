@@ -75,7 +75,8 @@ export default function ProductForm() {
       const data = (await response.json()) as Product[];
       setProducts(data);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Erro ao carregar produtos.";
+      const message =
+        error instanceof Error ? error.message : "Erro ao carregar produtos.";
       setErrorMessage(message);
     } finally {
       setLoading(false);
@@ -120,14 +121,17 @@ export default function ProductForm() {
       });
 
       if (!response.ok) {
-        const data = (await response.json().catch(() => null)) as { message?: string } | null;
+        const data = (await response.json().catch(() => null)) as {
+          message?: string;
+        } | null;
         throw new Error(data?.message ?? "Não foi possível salvar o produto.");
       }
 
       await loadProducts();
       resetForm();
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Erro ao salvar produto.";
+      const message =
+        error instanceof Error ? error.message : "Erro ao salvar produto.";
       setErrorMessage(message);
     }
   }
@@ -151,7 +155,9 @@ export default function ProductForm() {
     try {
       const response = await fetch(`/product/${id}`, { method: "DELETE" });
       if (!response.ok) {
-        const data = (await response.json().catch(() => null)) as { message?: string } | null;
+        const data = (await response.json().catch(() => null)) as {
+          message?: string;
+        } | null;
         throw new Error(data?.message ?? "Não foi possível remover o produto.");
       }
 
@@ -161,7 +167,8 @@ export default function ProductForm() {
 
       await loadProducts();
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Erro ao remover produto.";
+      const message =
+        error instanceof Error ? error.message : "Erro ao remover produto.";
       setErrorMessage(message);
     }
   }
@@ -222,7 +229,9 @@ export default function ProductForm() {
             type="text"
             inputMode="numeric"
             value={formData.price}
-            onChange={(event) => handleChange("price", formatPriceInput(event.target.value))}
+            onChange={(event) =>
+              handleChange("price", formatPriceInput(event.target.value))
+            }
             placeholder="0,00"
             required
           />
@@ -261,14 +270,19 @@ export default function ProductForm() {
               <div>
                 <strong>{product.name}</strong> ({product.sku})
                 <p>
-                  Categoria: {product.category} | Preço: R$ {formatPriceDisplay(product.price)} | Estoque: {product.stock}
+                  Categoria: {product.category} | Preço: R${" "}
+                  {formatPriceDisplay(product.price)} | Estoque: {product.stock}
                 </p>
               </div>
               <div className="item-actions">
                 <button type="button" onClick={() => handleEdit(product)}>
                   Editar
                 </button>
-                <button type="button" className="danger" onClick={() => handleDelete(product.id)}>
+                <button
+                  type="button"
+                  className="danger"
+                  onClick={() => handleDelete(product.id)}
+                >
                   Remover
                 </button>
               </div>
