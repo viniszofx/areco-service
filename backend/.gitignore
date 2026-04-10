@@ -3,6 +3,14 @@ bin/
 obj/
 out/
 
+# Executable files
+*.exe
+*.dll
+*.so
+*.msi
+*.dmg
+*.pkg
+
 # Visual Studio
 .vs/
 .vscode/
