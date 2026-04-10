@@ -1,0 +1,9 @@
+services:
+  database:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: areco
+      POSTGRES_PASSWORD: areco
+      POSTGRES_DB: arecodb
+    ports:
+      - "5432:5432"
