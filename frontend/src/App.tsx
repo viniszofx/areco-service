@@ -1,3 +1,9 @@
+import ProductForm from './components/ProductForm';
+
 export default function App() {
-  return <div>App</div>;
+  return (
+    <main className="page">
+      <ProductForm />
+    </main>
+  );
 }

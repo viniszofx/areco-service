@@ -1,38 +1,95 @@
+using App.DTO;
+using App.Service;
 using Microsoft.AspNetCore.Mvc;
 
 namespace App.Controller;
 
 [ApiController]
-[Route("[controller]")]
+[Route("product")]
 public class ProductController : ControllerBase
 {
-  public string Get()
+  private readonly ProductService _service;
+  private readonly ILogger<ProductController> _logger;
+
+  public ProductController(ProductService service, ILogger<ProductController> logger)
   {
-    return "Hello World!";
+    _service = service;
+    _logger = logger;
   }
 
-  [HttpGet("{id}")]
-  public string Get(string id)
+  [HttpGet]
+  public async Task<IActionResult> Get()
   {
-    return $"Hello World! {id}";
+    var products = await _service.GetAllAsync();
+    return Ok(products);
+  }
+
+  [HttpGet("{id:int}")]
+  public async Task<IActionResult> GetById(int id)
+  {
+    var product = await _service.GetByIdAsync(id);
+    if (product is null)
+      return NotFound(new { message = "Produto não encontrado." });
+
+    return Ok(product);
   }
 
   [HttpPost]
-  public string Post()
+  public async Task<IActionResult> Post([FromBody] ProductDTO dto)
   {
-    return "Hello World!";
+    try
+    {
+      var result = await _service.CreateAsync(dto);
+      if (!result.success)
+        return BadRequest(new { message = result.error });
+
+      return CreatedAtAction(nameof(GetById), new { id = result.product!.Id }, result.product);
+    }
+    catch (Exception ex)
+    {
+      _logger.LogError(ex, "Unexpected error while creating product.");
+      return StatusCode(500, new { message = "Erro interno do servidor." });
+    }
   }
 
-  [HttpPut("{id}")]
-  public string Put(string id)
+  [HttpPut("{id:int}")]
+  public async Task<IActionResult> Put(int id, [FromBody] ProductDTO dto)
   {
-    return $"Hello World! {id}";
+    try
+    {
+      var result = await _service.UpdateAsync(id, dto);
+      if (!result.success)
+      {
+        if (result.error == "Produto não encontrado.")
+          return NotFound(new { message = result.error });
+
+        return BadRequest(new { message = result.error });
+      }
+
+      return Ok(result.product);
+    }
+    catch (Exception ex)
+    {
+      _logger.LogError(ex, "Unexpected error while updating product {Id}.", id);
+      return StatusCode(500, new { message = "Erro interno do servidor." });
+    }
   }
 
-  [HttpDelete("{id}")]
-  public string Delete(string id)
+  [HttpDelete("{id:int}")]
+  public async Task<IActionResult> Delete(int id)
   {
-    return $"Hello World! {id}";
-  }
+    try
+    {
+      var result = await _service.DeleteAsync(id);
+      if (!result.success)
+        return NotFound(new { message = result.error });
 
+      return NoContent();
+    }
+    catch (Exception ex)
+    {
+      _logger.LogError(ex, "Unexpected error while deleting product {Id}.", id);
+      return StatusCode(500, new { message = "Erro interno do servidor." });
+    }
+  }
 }
